@@ -2,7 +2,7 @@
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
 canvas.width = 800;
-canvas.height = 500;
+canvas.height = 600;
 
 let score = 0;
 let gameFrame = 0;
@@ -66,34 +66,59 @@ class Player {
         }
       }
 const player = new Player();
+
 //cheese
 const cheeseArray = [];
 class Cheese {
     constructor(){
          this.x = Math.random() * canvas.width;
-         this.y = Math.random() * canvas.heights;
-         this.radius = 50;
-         this.speed = Math.random() * 5 + 1;
+         this.y = canvas.height + 100;
+         this.radius = 25;
+         this.speed = 1.5;
          this.distance;
           }
     update(){
         this.y -= this.speed;
+        //this.y -= Math.random() + canvas.height;
+        //this.x -= Math.random() + canvas.width;
+    
     }
     draw(){
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = 'yellow';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.closePath();
+        ctx.stroke();
     }      
 }
+function handleCheese(){
+    if (gameFrame % 400== 0){
+        cheeseArray.push(new Cheese());
+        console.log(cheeseArray.length);
+    }
+    for (let i = 0; i < cheeseArray.length; i++) {
+        cheeseArray[i].update();
+        cheeseArray[i].draw();
 
+    }
+    for (let i = 0; i < cheeseArray.length; i++){
+        if(cheeseArray[i].y < 0){
+        cheeseArray.splice(i, 1);
+        }
+        if (cheeseArray[i].distance < bubbleArray[i].radius + player.radius)
+    }
+}
 
 //animation loop
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleCheese();
     player.update();
-    player.draw()
+    player.draw();
+    ctx.fillStyle = 'black';
+    ctx.fillText('Gabagool: ' + score, 10, 50);
+    gameFrame++;
     requestAnimationFrame(animate);
 }
 animate();
