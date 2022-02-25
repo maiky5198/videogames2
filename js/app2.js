@@ -142,6 +142,9 @@ class Enemy {
       if (distance < this.radius + player.radius){
           handleYouDied();
       }
+      if (score == 10){
+          handleYouWin();
+      }
   }
 }
 const enemyCat = new Enemy();
@@ -151,7 +154,8 @@ function handleCat(){
 }
 function handleYouWin(){
     ctx.fillStyle = 'black';
-    ctx.fillText('Gabagooooool')
+    ctx.fillText('Gabagooooool', 100, 580);
+    gameOver = true;
     
 }
 function handleYouDied(){
