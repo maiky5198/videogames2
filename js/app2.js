@@ -1,6 +1,7 @@
 //canvas setup
 const canvas = document.getElementById('gameArea');
 const ctx = canvas.getContext('2d');
+//const image = document.getElementById('source')
 canvas.width = 800;
 canvas.height = 600;
 
@@ -115,18 +116,28 @@ function handleCheese(){
   }
 }
 
+//const image = new Image();
+//image.src = 'rat_naked_fat10.png';
 class Enemy {
     constructor(){
         this.x = canvas.width + 200;
         this.y = Math.random() * (canvas.height - 150) + 90;
         this.radius = 60;
         this.speed = 3;
+        // this.frameX = 0;
+        // this.frameY = 0;
+        // this.frame = 0;
+        // this.spriteWidth = 161;
+        // this.spriteHeight = 185;
     }
   draw() {
       ctx.fillStyle = 'black';
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.fill();
+          //canvas.width = this.naturalWidth;
+          //canvas.height = this.naturalHeight;
+          //ctx.drawImage(this, 0, 0, this.width, this.height); 
   }
   update() {
       this.x -= this.speed;
