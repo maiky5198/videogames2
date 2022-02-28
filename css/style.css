@@ -1,12 +1,9 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
 body {
+    /* here I want to everything in my body to fill the full window */
     width: 100vw;
     height: 100vh;
+    /* now I arrange my game area the way I want it with everything in the center */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,6 +11,7 @@ body {
 }
 
 #gameArea {
+   /* here I set how big the game area is */
     width: 800px;
     height: 600px;
     border: 4px solid black;
@@ -21,6 +19,7 @@ body {
 }
 
 h1 {
+   /* I used margin to space out the distance between the h1 and the game area */
     margin: 60px;
     font-size: 30px;
 }
