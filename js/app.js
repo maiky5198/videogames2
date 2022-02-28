@@ -1,142 +1,254 @@
-const canvas = document.getElementById("gameArea"); 
-const ctx = canvas.getContext("2d"); 
+//canvas setup
+const canvas = document.getElementById('gameArea');
+const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 600;
 
-// mouse variables
-let mouseX = 100; // the x position of the mouse
-let mouseY = 100; // the y position of the mouse
-let mouseSize = 20; // the radius of the mouse is 20 pixels
-let mouseXSpeed = 0; // the horizontal speed of the mouse
-let mouseYSpeed = 0; // the vertical speed of the mouse
- 
-// cat variables
-let catX = 700; // the x positon of the cat
-let catY = 500; // the y position of the cat
-let catSize = 60; // the radius of the cat is 60 pixels
+let gameOver = false;
+let score = 0;
+let gameFrame = 0;
+ctx.font = '50px Georgia';
 
-//cheese variables
-let cheeseY = 400;
-let cheeseX = 400;
-let cheeseSize = 30;
- 
-// game variables
-let stopGame = false; // game stops when this variable is true
- 
-// canvas properties
-// identify the correct canvas
-const canvas = document.getElementById("gameArea"); 
-const ctx = canvas.getContext("2d"); // get the 2D context
- 
-// capture keyboard events
-window.addEventListener("keydown", moveMouse);
-window.addEventListener("keyup", stopMouse);
- 
-function moveMouse(event)
-{
-  if(event.key =="d")
-  {     
-    mouseXSpeed = 10;
-  }
-  else if(event.key == "a")
-  {
-    mouseXSpeed = -10;
-  }
-  else if(event.key == "s")
-  {
-    mouseYSpeed = 10;
-  }
-  else if(event.key == "w")
-  {
-    mouseYSpeed = -10;
-  }
+//mouse interactivity
+let canvasPosition = canvas.getBoundingClientRect();
+const mouse = {
+    x: canvas.width/2,
+    y: canvas.height/2,
+    click: false
 }
- 
-function stopMouse(event)
-{
-  if(event.key == "d")
-  {     
-    mouseXSpeed = 0;
-  }
-  else if(event.key == "a")
-  {
-    mouseXSpeed = 0;
-  }
-  else if(event.key == "s")
-  {
-    mouseYSpeed = 0;
-  }
-  else if(event.key == "w")
-  {
-    mouseYSpeed = 0;
-  }
-}
- 
- 
- 
-function update()
-{
-  mouseX = mouseX + mouseXSpeed; // update horizontal position
-  mouseY = mouseY + mouseYSpeed; // update vertical position
- 
-  // the distance between the mouse and cat
-  let distance = Math.sqrt((mouseX - catX)*(mouseX - catX) 
-     + (mouseY - catY)*(mouseY - catY));
+canvas.addEventListener('mousedown',function(event){
+    mouse.click = true;
+    mouse.x = event.x - canvasPosition.left;
+    mouse.y = event.y - canvasPosition.top;
+    console.log(mouse.x, mouse.y);
+});
+canvas.addEventListener('mouseup', function(){
+    mouse.click = false;
+})
 
-     let distanceC = Math.sqrt((mouseX - cheeseX)*(mouseX - cheeseX)
-  + (mouseY - cheeseY)*(mouseY - cheeseY)); 
+//player
+const image = new Image();
+image.src = '/Users/maikynunez/sei/projects2/videogames2/img/rat_naked_fat10.png';
+class Player {
+      constructor(){
+          //this.x = canvas.width;
+          this.x = 0;
+          this.y = 0;
+          this.radius = 30;
+          this.angle = 0;
+          this.spriteWidth = 120;
+          this.spriteHeight = 120;
+      }
+      update(){
+         const dx = this.x - mouse.x;
+         const dy = this.y - mouse.y;
+         if (mouse.x != this.x) {
+             this.x -= dx/20;
+         }
+         if(mouse.y != this.y) {
+             this.y -= dy/20;
+         }
+        }
+        draw(){
+            if (mouse.click) {
+            ctx.lineWidth = 0.2;
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+                }
+          ctx.fillStyle = 'brown';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);  
+          ctx.fill();
+          ctx.closePath();
+          ctx.drawImage(image, this.x - 50, this.y - 70, this.spriteWidth, this.spriteHeight); 
+        }
+      }
+const player = new Player();
 
- // mouse and cat have hit each other if they the distance is
-  if(distance <= mouseSize + catSize) {
-    stopGame = true;
-  }
-
-if (distanceC <= mouseSize + cheeseSize) {
-   remove (cheeseY, cheeseX, cheeseSize);
- }
-}
-
-function draw()
-{
-  // clear canvas by painting the whole canvas white
-  ctx.fillStyle="white";
-  ctx.fillRect(0,0,1400,700);
- 
-  // draw mouse
-  ctx.fillStyle="#614F4B"; 
-  ctx.beginPath(); 
-  ctx.arc(mouseX, mouseY, mouseSize, 0, Math.PI * 2); 
-  ctx.fill(); 
- 
-  // draw cat
-  ctx.fillStyle="#56138E"; 
-  ctx.beginPath(); 
-  ctx.arc(catX, catY, catSize, 0, Math.PI * 2); 
-  ctx.fill(); 
-
-  // draw cheese
-  ctx.fillStyle="#EFF410"
-  ctx.beginPath();
-  ctx.arc(cheeseX, cheeseY, cheeseSize, 0, Math.PI * 2, );
-  ctx.fill();
-
-}
- 
-function render()
-{
-  update();
-  draw();
-   
-  if(stopGame == false)
-  {
+//CHEESE
+const cheeseImg = new Image();
+cheeseImg.src = '/Users/maikynunez/sei/projects2/videogames2/img/trianglecheese_ccexpress.png';
+const cheeseArray = [];
+class Cheese {
+    constructor(){
+         this.x = Math.random() * canvas.width;
+         this.y = canvas.height + 100;
+         this.radius = 25;
+         this.speed = 1.5;
+         this.distance = 0;
+         this.counted = false;
+         this.spriteWidth = 70;
+         this.spriteHeight = 70;
+          }
+    update(){
+        this.y -= this.speed;
+        const dx = this.x - player.x;
+        const dy = this.y - player.y;
+        this.distance = Math.sqrt(dx*dx + dy*dy);
     
-    window.requestAnimationFrame(render);
-  }
-  else // stopGame is true
-  {
-    
-    alert("Eat more gabagool!");
-  }
+    }
+    draw(){
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+        ctx.stroke();
+        ctx.drawImage(cheeseImg, this.x - 40, this.y - 40, this.spriteWidth, this.spriteHeight); 
 
-
+    }      
 }
- 
-window.requestAnimationFrame(render);
+
+
+function handleCheese(){
+    if (gameFrame % 400 == 0){
+        cheeseArray.push(new Cheese());
+    }
+    for (let i = 0; i < cheeseArray.length; i++) {
+        cheeseArray[i].update();
+        cheeseArray[i].draw();
+
+    }
+    for (let i = 0; i < cheeseArray.length; i++){
+        if(cheeseArray[i].y < 0){
+        cheeseArray.splice(i, 1);
+        }
+        if (cheeseArray[i].distance < cheeseArray[i].radius + player.radius){
+            if(!cheeseArray[i].counted){
+            score++;
+            cheeseArray[i].counted = true;
+            cheeseArray.splice(i, 1);
+            }
+    }
+  }
+}
+
+
+//GABAGOOL
+const gabaImg = new Image();
+gabaImg.src = '/Users/maikynunez/sei/projects2/videogames2/img/gabagool_ccexpress.png';
+const gabaArray = [];
+class Gaba {
+    constructor(){
+         this.x = Math.random() * canvas.width;
+         this.y = canvas.height + 100;
+         this.radius = 25;
+         this.speed = 3;
+         this.distance = 0;
+         this.counted = false;
+         this.spriteWidth = 60;
+         this.spriteHeight = 60;
+          }
+    update(){
+        this.y -= this.speed;
+        const dx = this.x - player.x;
+        const dy = this.y - player.y;
+        this.distance = Math.sqrt(dx*dx + dy*dy);
+    
+    }
+    draw(){
+        ctx.fillStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+        ctx.stroke();
+        ctx.drawImage(gabaImg, this.x - 30, this.y - 30, this.spriteWidth, this.spriteHeight); 
+
+    }      
+}
+
+
+function handleGaba(){
+    if (gameFrame % 200 == 0){
+        gabaArray.push(new Gaba());
+    }
+    for (let i = 0; i < gabaArray.length; i++) {
+        gabaArray[i].update();
+        gabaArray[i].draw();
+
+    }
+    for (let i = 0; i < gabaArray.length; i++){
+        if(gabaArray[i].y < 0){
+        gabaArray.splice(i, 1);
+        }
+        if (gabaArray[i].distance < gabaArray[i].radius + player.radius){
+            if(!gabaArray[i].counted){
+            score++;
+            gabaArray[i].counted = true;
+            gabaArray.splice(i, 1);
+            }
+    }
+  }
+}
+
+
+class Enemy {
+    constructor(){
+        this.x = canvas.width + 200;
+        this.y = Math.random() * (canvas.height - 150) + 90;
+        this.radius = 60;
+        this.speed = 3;
+  
+         
+    }
+  draw() {
+      ctx.fillStyle = 'black';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(this.x,this.y,this.radius,10);
+      
+  }
+  update() {
+      this.x -= this.speed;
+      if (this.x < 0 - this.radius * 2){
+          this.x = canvas.width + 200;
+          this.y = Math.random() * (canvas.height - 150) + 90;
+          this.speed = 5;
+      }
+      //collision detection
+      const dx = this.x - player.x;
+      const dy = this.y - player.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < this.radius + player.radius){
+          handleYouDied();
+      }
+      if (score == 10){
+          handleYouWin();
+      }
+  }
+}
+const enemyCat = new Enemy();
+function handleCat(){
+    enemyCat.update();
+    enemyCat.draw();
+}
+function handleYouWin(){
+    ctx.fillStyle = 'black';
+    ctx.fillText('Gabagooooool', 100, 580);
+    gameOver = true;
+    
+}
+function handleYouDied(){
+    ctx.fillStyle = 'black';
+    ctx.fillText('You Lost: Eat more Gabagool', 100, 580);
+    gameOver = true;
+}
+
+//animation loop
+function animate(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleCheese();
+    handleCat();
+    handleGaba();
+    player.update();
+    player.draw();
+    ctx.fillStyle = 'black';
+    ctx.fillText('Gabagool: ' + score, 10, 50);
+    gameFrame++;
+    if (gameOver == false) requestAnimationFrame(animate);
+}
+animate();
