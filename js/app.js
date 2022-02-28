@@ -230,7 +230,7 @@ function createGaba(){
 }
 //ENEMY
 const enemyImg = new Image();
-enemyImg.src = '/Users/maikynunez/sei/projects2/videogames2/img/enemycat_ccexpress.png';
+enemyImg.src = '../img/enemycat_ccexpress.png';
 class Enemy {
     constructor(){
         this.x = canvas.width + 200;
