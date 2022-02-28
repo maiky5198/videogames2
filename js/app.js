@@ -96,7 +96,7 @@ class Cheese {
         ctx.fill();
         ctx.closePath();
         ctx.stroke();
-        ctx.drawImage(cheeseImg, this.x - 40, this.y - 40, this.spriteWidth, this.spriteHeight); 
+        ctx.drawImage(cheeseImg, this.x - 40, this.y - 35, this.spriteWidth, this.spriteHeight); 
 
     }      
 }
@@ -113,13 +113,13 @@ function handleCheese(){
     }
     for (let i = 0; i < cheeseArray.length; i++){
         if(cheeseArray[i].y < 0){
-        cheeseArray.splice(i, 1);
+        cheeseArray.splice(i,1);
         }
         if (cheeseArray[i].distance < cheeseArray[i].radius + player.radius){
             if(!cheeseArray[i].counted){
             score++;
             cheeseArray[i].counted = true;
-            cheeseArray.splice(i, 1);
+            cheeseArray.splice(i,1);
             }
     }
   }
@@ -183,14 +183,17 @@ function handleGaba(){
     }
   }
 }
-
-
+//ENEMY
+const enemyImg = new Image();
+enemyImg.src = '/Users/maikynunez/sei/projects2/videogames2/img/enemycat_ccexpress.png';
 class Enemy {
     constructor(){
         this.x = canvas.width + 200;
         this.y = Math.random() * (canvas.height - 150) + 90;
-        this.radius = 60;
+        this.radius = 50;
         this.speed = 3;
+        this.spriteWidth = 170;
+        this.spriteHeight = 170;
   
          
     }
@@ -200,6 +203,7 @@ class Enemy {
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillRect(this.x,this.y,this.radius,10);
+      ctx.drawImage(enemyImg, this.x - 100, this.y - 60, this.spriteWidth, this.spriteHeight); 
       
   }
   update() {
@@ -228,13 +232,13 @@ function handleCat(){
 }
 function handleYouWin(){
     ctx.fillStyle = 'black';
-    ctx.fillText('Gabagooooool', 100, 580);
+    ctx.fillText('You Won: Happy Rat', 150, 580);
     gameOver = true;
     
 }
 function handleYouDied(){
     ctx.fillStyle = 'black';
-    ctx.fillText('You Lost: Eat more Gabagool', 100, 580);
+    ctx.fillText('You Lost: Evil Cat Got You', 100, 580);
     gameOver = true;
 }
 
@@ -247,7 +251,7 @@ function animate(){
     player.update();
     player.draw();
     ctx.fillStyle = 'black';
-    ctx.fillText('Gabagool: ' + score, 10, 50);
+    ctx.fillText('Eatery: ' + score, 10, 50);
     gameFrame++;
     if (gameOver == false) requestAnimationFrame(animate);
 }
