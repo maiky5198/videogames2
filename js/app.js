@@ -12,7 +12,7 @@ let gameOver = false;
 let score = 0;
 //I want to control my frames so I can spawn things when I want
 let gameFrame = 0;
-ctx.font = '50px Georgia';
+ctx.font = '40px Arial';
 
 //MOUSE CLICK
 //I want to have the player click the mouse to move
@@ -71,15 +71,7 @@ class Player {
              this.y -= dy/20;
          }
         }
-        //create draw method to actual draw in canvas
         draw(){
-            // if (mouse.click) {
-            // ctx.lineWidth = 0.2;
-            // ctx.beginPath();
-            // ctx.moveTo(this.x, this.y);
-            // ctx.lineTo(mouse.x, mouse.y);
-            // ctx.stroke();
-            //     }
             //built in canvas  
           ctx.fillStyle = 'brown';
           //begin circle path
@@ -122,7 +114,7 @@ class Cheese {
         const dx = this.x - player.x;
         const dy = this.y - player.y;
         //here we are calculating distance bewteen 2 circles
-        this.distance = Math.sqrt(dx*dx + dy*dy);
+        this.distance = Math.sqrt(dx * dx + dy * dy);
     
     }
     draw(){
@@ -190,7 +182,7 @@ class Gaba {
         this.y -= this.speed;
         const dx = this.x - player.x;
         const dy = this.y - player.y;
-        this.distance = Math.sqrt(dx*dx + dy*dy);
+        this.distance = Math.sqrt(dx * dx + dy * dy);
     
     }
     draw(){
@@ -230,7 +222,7 @@ function createGaba(){
 }
 //ENEMY
 const enemyImg = new Image();
-enemyImg.src = '../img/enemycat_ccexpress.png';
+enemyImg.src = '/Users/maikynunez/sei/projects2/videogames2/img/enemycat_ccexpress.png';
 class Enemy {
     constructor(){
         this.x = canvas.width + 200;
@@ -265,6 +257,7 @@ class Enemy {
       if (distance < this.radius + player.radius){
           handleYouDied();
       }
+     //needed to setup the score here so an animation lag didnt occur
       if (score == 10){
           handleYouWin();
       }
